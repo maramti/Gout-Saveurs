@@ -1,0 +1,192 @@
+body{
+    background-image: url(background.jpg);
+    background-size:cover;
+    background-repeat: no-repeat;
+    overflow-x: hidden;
+    overflow-y:scroll;
+}
+
+#title{
+    font-family:Bowlby One;
+    font-size: 60px;
+    color: white;
+    position: absolute;
+    left: 50%;
+    top:20%;
+    transform: translateX(-50%);
+}
+h4{
+    font-family: Bowlby One;
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top:40%;
+}
+.register{
+    position: relative;
+    left:25%;
+    top:10px;
+}
+/*
+.salade{
+    width: 950px;
+    position:absolute;
+    top:70%;
+    right:50%;
+    transition: 0.5s linear;
+    border: 1px slateblue solid;
+}
+.salade:hover{
+    width:1000px
+}
+*/
+#barre_de_recherche{
+    width:40%;
+    height:40px;
+    border-radius: 20px;
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translateX(-50%);
+    border: 1px white solid;
+    opacity: 70%;
+    padding-left: 10px;
+}
+.bloc1{
+    /*
+    border: 1px white solid;
+    */
+    width:1300px;
+    height: 500px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 20px;
+    /*
+    background-color: rgba(255,255,255,0.2);
+    */
+}
+.header{
+    display:flex;
+    gap:60px;
+    height:50px;
+    align-items: center;
+    list-style: none;
+}
+
+a{
+    cursor: pointer;
+    color: white;
+    font-family: Bowlby One;
+    transition:0.2s ease-in;
+    text-decoration:none;
+}
+a:hover{
+    color:rgb(255, 200, 0);
+}
+#signin{
+    border: 3px white solid;
+    border-radius: 20px;
+    width:500px;
+    height:400px;
+    position:absolute;
+   left:50%;
+   top:50%;
+   transform: translate(-50%,-50%);
+   background-color:rgb(255, 110, 22);
+   z-index: 1;
+   padding: 30px;
+}
+#bloc_title{
+    color:white;
+    font-family: Bowlby One;
+    font-size: 25px;
+    position: relative;
+    left:40px ;
+}
+
+#signin form{
+    font-family: Bowlby One;
+    color: white;
+    font-size:15px ;
+    height: 320px ; 
+}
+#signin label{
+    background-color: rgb(255, 110, 22);
+    position: relative;
+    top:10px;
+    padding-left: 5px;
+    padding-right: 5px;
+
+}
+.motmot{
+    position: relative;
+    left:25px;
+}
+#signin input{
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 2px white solid;
+    width:80%;
+    height:35px;
+    background-color: transparent; 
+}
+#signin button{
+    width:80%;
+    height:30px;
+    border-radius: 5px;
+    border: 1px white solid;
+    cursor: pointer;
+}
+#signin button:hover{
+    background-color: rgb(255, 200, 0);
+    border-color: rgb(255, 200, 0);
+    color: white;
+}
+#cliquemoi{
+    position: relative;
+    left: 499px;
+    bottom:109px;
+    font-size: 25px;
+    cursor: pointer;
+}
+#cliquemoi:hover{
+    color: black; 
+}
+
+
+/*
+#mon_compte{
+    position: absolute;
+    left:75%;
+    border: 1px white solid;
+}
+/*
+#menu_title{
+    position: relative;
+}
+.side_menu{
+    padding-top: 40px;
+    background-color: rgba(255, 255, 255, 0.4);
+   position: absolute;
+   padding-left: 20px;
+   width:450px;
+   height:700px;
+   left:-70px;
+   top:-30px;
+   border-radius: 10px;
+   left:400px;
+   transition: left 1s ease-out;
+}
+
+#mon_compte:hover .side_menu{
+   left:-70%;
+}
+
+
+#barre_de_recherche:focus,
+#barre_de_recherche:valid{
+    border: 2px white solid;
+    opacity:100%;
+}
