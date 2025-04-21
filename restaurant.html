@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant l’escargot</title>
+  <link rel="stylesheet" href="restaurant.css">
+</head>
+<body>
+  <header>
+    <div class="top-bar">
+      <div class="left">
+        <img src="Design_sans_titre-removebg-preview.png" alt="Logo du restaurant" class="logo">
+      </div>
+      <div class="center">
+        <input type="text" placeholder="Rechercher un plat, un restaurant..." class="search-bar">
+      </div>
+      <div class="right">
+        <nav class="nav-buttons">
+          <a href="#">Accueil</a>
+          <a href="#">À propos</a>
+          <a href="#">Se connecter</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+    <div class="name-rating">
+      <h1>Restaurant l’escargot</h1>
+      <p><span class="stars">★★★★★</span> 1021 notes</p>
+    </div>
+  
+
+  <section class="gallery">
+    <div class="image-layout">
+      <div class="main-image">
+        <img id="mainImage" src="r901-Restaurant-lescargot-dishes-2024-12-1.jpg" alt="plat principal">
+      </div>
+      <div class="thumbnails">
+        <img src="rc87-dishes-Restaurant-lescargot-2022-10.jpg" alt="plat secondaire" onclick="changeMainImage(this)">
+        <img src="r297-Restaurant-lescargot-food-2022-10.jpg" alt="plat secondaire" onclick="changeMainImage(this)">
+        <img src="r6c6-Restaurant-lescargot-clam-chowder.jpg" alt="plat secondaire" onclick="changeMainImage(this)">
+        <img src="rac5-Restaurant-lescargot-sea-bass (1).jpg" alt="plat secondaire" onclick="changeMainImage(this)">
+      </div>
+    </div>
+  </section>
+
+  <section class="description">
+    <p>
+      Tous les clients adorent la fabuleuse cuisine française de ce restaurant.
+      N’oubliez pas d’apprécier un steak grillé délicieux à <strong>Restaurant l’escargot</strong>.
+      Si vous avez faim, venez ici pour un parfait fascinant.
+    </p>
+  </section>
+
+  <button>+ Ajoutez votre avis</button>
+  <!-- Popup modal for review -->
+<div id="popupReview" class="popup-overlay">
+  <div class="popup-content">
+    <span class="close-btn" id="closePopup">&times;</span>
+    <h3>Laisser un avis</h3>
+    <form id="formAvis">
+      <label>Note :</label><br>
+      <div class="stars" id="starRating">
+        <span data-value="1">★</span>
+        <span data-value="2">★</span>
+        <span data-value="3">★</span>
+        <span data-value="4">★</span>
+        <span data-value="5">★</span>
+      </div>
+      <input type="hidden" id="note" required><br><br>
+
+      <label>Commentaire :</label><br>
+      <textarea id="commentaire" rows="4"></textarea><br><br>
+
+      <button type="submit">Envoyer l’avis</button>
+    </form>
+  </div>
+</div>
+
+
+  <section class="reviews">
+    <h2>Avis des visiteurs</h2>
+    <div class="review">
+      <h3>J-P SLONGO</h3>
+      <p>★★★★☆</p>
+      <p>Très beau petit resto. Carte variée mais sans beaucoup de choix...</p>
+      <ul>
+        <li><strong>Service :</strong> Dine in</li>
+        <li><strong>Type de repas :</strong> Déjeuner</li>
+        <li><strong>Prix :</strong> TND 40–50</li>
+        <li><strong>Nourriture :</strong> 4</li>
+        <li><strong>Service :</strong> 5</li>
+        <li><strong>Ambiance :</strong> 4</li>
+      </ul>
+    </div>
+    <div class="review">
+      <h3>Antoine Cordonnier</h3>
+      <p>★★★★★</p>
+      <p>Restau super sympa. De très bons plats, de très bons vins...</p>
+      <ul>
+        <li><strong>Nourriture :</strong> 5</li>
+        <li><strong>Service :</strong> 5</li>
+        <li><strong>Ambiance :</strong> 3</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <script>
+    function changeMainImage(thumbnail) {
+      const main = document.getElementById("mainImage");
+      const tempSrc = main.src;
+      main.src = thumbnail.src;
+      thumbnail.src = tempSrc;
+    }
+    
+    const btnAjouterAvis = document.querySelector('button');
+const popup = document.getElementById('popupReview');
+const closeBtn = document.getElementById('closePopup');
+const form = document.getElementById('formAvis');
+const noteInput = document.getElementById('note');
+const stars = document.querySelectorAll('#starRating span');
+
+  // Afficher / masquer le formulaire
+  btnAjouterAvis.addEventListener('click', () => {
+  popup.style.display = 'flex';
+});
+closeBtn.addEventListener('click', () => {
+  popup.style.display = 'none';
+});
+
+  // Simuler l'ajout d'un avis
+  form.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const nom = document.getElementById('nom').value;
+  const note = noteInput.value;
+  const commentaire = document.getElementById('commentaire').value;
+
+  const nouvelAvis = document.createElement('div');
+  nouvelAvis.className = 'review';
+  nouvelAvis.innerHTML = `
+    <h3>${nom}</h3>
+    <p>${'⭐'.repeat(note)}</p>
+    <p>${commentaire}</p>
+  `;
+
+  document.querySelector('.reviews').appendChild(nouvelAvis);
+  form.reset();
+  stars.forEach(s => s.classList.remove('selected'));
+  popup.style.display = 'none';
+});
+  // Gérer le clic sur les étoiles
+/*const stars = document.querySelectorAll('#starRating span');
+const noteInput = document.getElementById('note');*/
+
+stars.forEach(star => {
+  star.addEventListener('click', () => {
+    const rating = parseInt(star.getAttribute('data-value'));
+    noteInput.value = rating;
+    stars.forEach(s => {
+      s.classList.toggle('selected', parseInt(s.getAttribute('data-value')) <= rating);
+    });
+  });
+
+  star.addEventListener('mouseenter', () => {
+    const rating = parseInt(star.getAttribute('data-value'));
+    stars.forEach(s => {
+      s.classList.toggle('hovered', parseInt(s.getAttribute('data-value')) <= rating);
+    });
+  });
+
+  star.addEventListener('mouseleave', () => {
+    stars.forEach(s => s.classList.remove('hovered'));
+  });
+});
+
+
+</script>
+
+</body>
+</html>
