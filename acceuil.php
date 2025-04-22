@@ -1,38 +1,50 @@
 <?php
 session_start();
 
-include 'includes/database.php' ;
-if(isset($_GET['id'])){
-    $sql="select * from restaurant where id_restaurant= :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id' => $_GET['id']]);
-    $restaurant = $stmt->fetch(PDO::FETCH_ASSOC);
-}
+$results = [];
+$query = '';
 
+if (isset($_GET['query'])) {
+    $query = htmlspecialchars($_GET['query']);
+
+    include 'includes/database.php';
+
+    $sql = "SELECT * FROM restaurant 
+            WHERE nom LIKE :q OR categorie LIKE :q 
+            OR description LIKE :q OR localisation LIKE :q";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['q' => "%$query%"]);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
-<!DOCTYPE html>
+
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GOUT & SAVERS</title>
-  <link rel="stylesheet" href="assets/restaurant.css">
+    <link href="assets/projet.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GOÛT & AVIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+ 
 </head>
 <body>
-  <header>
-    <div class="top-bar">
-      <div class="left">
-        <img src="Design_sans_titre-removebg-preview.png" alt="Logo du restaurant" class="logo">
+<?php if (isset($_SESSION['user_id'])): ?>
+      <div class="welcome-message">
+        <h1>Bienvenue, <?php echo htmlspecialchars($_SESSION['user_nom']); ?> !</h1>
       </div>
-      <div class="center">
-        <input type="text" placeholder="Rechercher un plat, un restaurant..." class="search-bar">
-      </div>
-      <div class="right">
-        <nav class="nav-buttons">
-          <a href="main.php">Accueil</a>
-          <a href="#">À propos</a>
-          <?php if (isset($_SESSION['user_id'])): ?>
+    <?php endif; ?>
+
+  <!-- HOME / ABOUT SECTION -->
+  <div class="background" id="mainBackground">
+  <nav class="navbar">
+        <ul>
+          <li><a href="javascript:void(0);" class="active" onclick="showContent('home')">Acceuil</a></li>
+          <li><a href="javascript:void(0);" onclick="showContent('about')">A propos de nous</a></li>
+          <li>
+              <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="user-icon">
                   <i class="fas fa-user"></i>
                   <div class="dropdown">
@@ -52,198 +64,145 @@ if(isset($_GET['id'])){
                 
                 <a href="../forms/login.php" > Se connecter</a>
               <?php endif; ?>
-        </nav>
+          </li>
+        </ul>
+      </nav>
+
+
+    <div class="content" id="home">
+      <h1 class="title">GOÛT & AVIS</h1>
+      <div class="search-box">
+        <form method="GET" action="main.php">
+          <input
+            type="text"
+            placeholder="EX : PLAT, SPÉCIALITÉ.."
+            name="query"
+            id="searchInput"
+            required
+          />
+          <button type="submit" style="display: none;"></button>
+        </form>
+        <i class="fas fa-magnifying-glass"></i>
       </div>
+      <p class="slogan">
+        PLATEFORME DE NOTATION ET DE GESTION DES<br />RESTAURANTS ET CAFÉS
+      </p>
     </div>
-  </header>
-    <div class="name-rating">
-    <?php if (isset($restaurant) && $restaurant): ?>
-      <h1>Restaurant  <?= $restaurant['nom']?> </h1>
-      <p><span class="stars">★★★★★</span></p>
-      <?php else: ?> 
-        <p> Restaurant introuvable. </p>
-      <?php endif; ?>
+
+    <div class="content" id="about" style="display: none">
+      <h1 class="title">À propos de GOÛT & AVIS</h1>
+      <p>Bienvenue sur GOÛT & AVIS, la plateforme idéale pour partager vos avis et expériences culinaires.</p>
+      <p>Notre mission est de créer une communauté où chaque utilisateur peut facilement trouver des restaurants et cafés qui correspondent à ses préférences personnelles.</p>
     </div>
-  
-
-  <section class="gallery">
-    <div class="image-layout">
-      <div class="main-image">
-      <?php if (isset($restaurant) && $restaurant): ?>
-      <img src="<?= htmlspecialchars($restaurant['image_url']) ?>" alt="<?= htmlspecialchars($restaurant['nom']) ?>" ><br>
-      <?php endif; ?>
-    </div>
-    <!--
-      <div class="thumbnails">
-        <img src="rc87-dishes-Restaurant-lescargot-2022-10.jpg" alt="plat secondaire" onclick="changeMainImage(this)">
-        <img src="r297-Restaurant-lescargot-food-2022-10.jpg" alt="plat secondaire" onclick="changeMainImage(this)">
-        <img src="r6c6-Restaurant-lescargot-clam-chowder.jpg" alt="plat secondaire" onclick="changeMainImage(this)">
-        <img src="rac5-Restaurant-lescargot-sea-bass (1).jpg" alt="plat secondaire" onclick="changeMainImage(this)">
-      </div>
-      -->
-    </div>
-  </section>
-
-  <section class="description">
-  <?php if (isset($restaurant) && $restaurant): ?>
-  <p><strong>Description : </strong> <?= $restaurant['description']?> </p>
-  <?php endif; ?>
-  </section>
-
-  <button>+ Ajoutez votre avis</button>
-  <!-- Popup modal for review -->
-<div id="popupReview" class="popup-overlay">
-  <div class="popup-content">
-    <span class="close-btn" id="closePopup">&times;</span>
-    <h3>Laisser un avis</h3>
-    <form id="formAvis" method="post" action="includes/envoi-avis.php">
-      <label>Note :</label><br>
-      <div class="stars" id="starRating">
-        <span data-value="1">★</span>
-        <span data-value="2">★</span>
-        <span data-value="3">★</span>
-        <span data-value="4">★</span>
-        <span data-value="5">★</span>
-      </div>
-      <input type="hidden" id="note" name="nbre" required><br><br>
-      <input type="hidden" name="id_restaurant" value="<?php echo $_GET['id'] ?>">
-      <input type="hidden" name="id_utilisateur" value="<?php echo $_SESSION['user_id'] ?>">
-
-      <label>Commentaire :</label><br>
-      <textarea id="commentaire" rows="4" name="avis"></textarea><br><br>
-
-      <button type="submit" name="envoyer-avis">Envoyer l’avis</button>
-    </form>
   </div>
-</div>
 
-
-  <section class="reviews">
-    <h2>Avis des visiteurs</h2>
-    <div class="review">
-      <h3>J-P SLONGO</h3>
-      <p>★★★★☆</p>
-      <p>Très beau petit resto. Carte variée mais sans beaucoup de choix...</p>
-      <ul>
-        <li><strong>Service :</strong> Dine in</li>
-        <li><strong>Type de repas :</strong> Déjeuner</li>
-        <li><strong>Prix :</strong> TND 40–50</li>
-        <li><strong>Nourriture :</strong> 4</li>
-        <li><strong>Service :</strong> 5</li>
-        <li><strong>Ambiance :</strong> 4</li>
-      </ul>
+  <!-- RESULTS SECTION -->
+  <div class="results-page" id="results" style="display: none">
+    <div class="results-nav">
+      <a href="javascript:void(0);" onclick="returnToSection('home')">Acceuil</a>
+      <a href="javascript:void(0);" onclick="returnToSection('about')">A propos de nous</a>
+      <a href="forms/login.php">Se connecter</a>
     </div>
-    <div class="review">
-      <h3>Antoine Cordonnier</h3>
-      <p>★★★★★</p>
-      <p>Restau super sympa. De très bons plats, de très bons vins...</p>
-      <ul>
-        <li><strong>Nourriture :</strong> 5</li>
-        <li><strong>Service :</strong> 5</li>
-        <li><strong>Ambiance :</strong> 3</li>
-      </ul>
-    </div>
-  </section>
 
+    <div class="top-search-box">
+      <form method="GET" action="main.php">
+        <input type="text" id="resultInput" name="query" placeholder="EX : PLAT, SPÉCIALITÉ.." />
+        <button type="submit" style="display: none;"></button>
+      </form>
+      <i class="fas fa-magnifying-glass"></i>
+    </div>
+
+    <div class="results-text">
+      <?php if (!empty($query)): ?>
+        <h2>Résultats pour : <?= htmlspecialchars($query) ?></h2>
+        <?php if (count($results) > 0): ?>
+          <ul class="container">
+            <?php foreach ($results as $row): ?>
+              <a href="restaurant.php?id=<?= $row['id_restaurant'] ?>">
+              <li class="item"> 
+                <strong><?= $row['nom'] ?></strong><br>
+                <img src="<?= htmlspecialchars($row['image_url']) ?>" alt="<?= htmlspecialchars($row['nom']) ?>" width="200"><br>
+                <strong>Catégorie :</strong> <?= $row['categorie'] ?><br>
+                <strong>Localisation :</strong> <?= $row['localisation'] ?><br>
+                Description : <?= $row['description'] ?>
+                
+              </li>
+            </a>
+            <?php endforeach; ?>
+          </ul>
+        <?php else: ?>
+          <p>Aucun résultat trouvé.</p>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div>
+  </div>
 
   <script>
-    
-    function changeMainImage(thumbnail) {
-      const main = document.getElementById("mainImage");
-      const tempSrc = main.src;
-      main.src = thumbnail.src;
-      thumbnail.src = tempSrc;
+    document.addEventListener("DOMContentLoaded", function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("query")) {
+    const background = document.getElementById("mainBackground");
+    background.classList.add("slide-up");
+
+    setTimeout(() => {
+        background.style.display = "none";
+        background.classList.remove("slide-up");
+        document.getElementById("results").style.display = "block";
+        document.getElementById("resultInput").value = urlParams.get("query");
+    }, 600); // attendre que le slide-up s'affiche
+}
+
+    });
+
+    function showContent(section) {
+      document.querySelectorAll(".content").forEach((el) => {
+        el.style.display = "none";
+      });
+      document.getElementById(section).style.display = "block";
+      const links = document.querySelectorAll(".navbar a");
+      links.forEach((link) => link.classList.remove("active"));
+      event.target.classList.add("active");
     }
-    
-    const btnAjouterAvis = document.querySelector('button');
-const popup = document.getElementById('popupReview');
-const closeBtn = document.getElementById('closePopup');
-const form = document.getElementById('formAvis');
-const noteInput = document.getElementById('note');
-const stars = document.querySelectorAll('#starRating span');
 
-  <?php if (isset($_SESSION['user_id'])): ?>
-    btnAjouterAvis.addEventListener('click', () => {
-      popup.style.display = 'flex';
-    });
-  <?php else: ?>
-    btnAjouterAvis.addEventListener('click', () => {
-      alert("Vous devez être connecté pour laisser un avis.");
-    });
-  <?php endif; ?>
+    function returnToSection(sectionId) {
+      const resultsPage = document.getElementById("results");
+      resultsPage.classList.add("slide-down");
 
+      setTimeout(() => {
+        resultsPage.style.display = "none";
+        resultsPage.classList.remove("slide-down");
 
-closeBtn.addEventListener('click', () => {
-  popup.style.display = 'none';
-});
+        const mainBackground = document.getElementById("mainBackground");
+        mainBackground.style.display = "block";
 
-form.addEventListener('submit', (e) => {
-  e.preventDefault(); // Empêcher l'envoi traditionnel du formulaire
+        document.querySelectorAll(".content").forEach((el) => {
+          el.style.display = "none";
+        });
 
-  const nom = document.getElementById('nom').value;
-  const note = noteInput.value;
-  const commentaire = document.getElementById('commentaire').value;
-  const idRestaurant = document.querySelector('input[name="id_restaurant"]').value;
-  const idUtilisateur = document.querySelector('input[name="id_utilisateur"]').value;
+        document.getElementById(sectionId).style.display = "block";
 
-  // Préparer les données à envoyer
-  const formData = new FormData();
-  formData.append('nbre', note);
-  formData.append('avis', commentaire);
-  formData.append('id_restaurant', idRestaurant);
-  formData.append('id_utilisateur', idUtilisateur);
+        const links = mainBackground.querySelectorAll(".navbar a");
+        links.forEach((link) => {
+          link.classList.remove("active");
+          if (link.textContent.toLowerCase() === sectionId) {
+            link.classList.add("active");
+          }
+        });
+      }, 600);
+    }
 
-  // Utiliser fetch pour envoyer les données
-  fetch('includes/envoi-avis.php', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.text())
-  .then(data => {
-    // Afficher le nouvel avis dans la page
-    const nouvelAvis = document.createElement('div');
-    nouvelAvis.className = 'review';
-    nouvelAvis.innerHTML = `
-      <h3>${nom}</h3>
-      <p>${'⭐'.repeat(note)}</p>
-      <p>${commentaire}</p>
-    `;
-    document.querySelector('.reviews').appendChild(nouvelAvis);
-    
-    // Réinitialiser le formulaire et les étoiles
-    form.reset();
-    stars.forEach(s => s.classList.remove('selected'));
-  })
-  .catch(error => console.error('Error:', error));
-});
+    function showRecommendations() {
+      const background = document.getElementById("mainBackground");
+      background.classList.add("slide-up");
 
-  // Gérer le clic sur les étoiles
-/*const stars = document.querySelectorAll('#starRating span');
-const noteInput = document.getElementById('note');*/
-
-stars.forEach(star => {
-  star.addEventListener('click', () => {
-    const rating = parseInt(star.getAttribute('data-value'));
-    noteInput.value = rating;
-    stars.forEach(s => {
-      s.classList.toggle('selected', parseInt(s.getAttribute('data-value')) <= rating);
-    });
-  });
-
-  star.addEventListener('mouseenter', () => {
-    const rating = parseInt(star.getAttribute('data-value'));
-    stars.forEach(s => {
-      s.classList.toggle('hovered', parseInt(s.getAttribute('data-value')) <= rating);
-    });
-  });
-
-  star.addEventListener('mouseleave', () => {
-    stars.forEach(s => s.classList.remove('hovered'));
-  });
-});
-
-
-</script>
-
+      setTimeout(() => {
+        background.style.display = "none";
+        background.classList.remove("slide-up");
+        const results = document.getElementById("results");
+        results.style.display = "block";
+        document.querySelector(".results-text").style.display = "none";
+      }, 600);
+    }
+  </script>
 </body>
 </html>
